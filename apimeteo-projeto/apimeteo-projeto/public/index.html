@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fffdf9">
+    <meta name="description" content="Portal profissional de monitoramento meteorológico com arquitetura de microsserviços.">
+    <title>METEO | Alice Antunes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&family=Plus+Jakarta+Sans:wght@500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <!-- Topo / Barra de Navegação Estilo App -->
+    <header class="site-header">
+      <div class="brand-wrapper">
+        <a class="brand" href="#inicio">
+          <span class="brand-badge" aria-hidden="true">✦</span>
+          <span>APIMETEO <small>PRO</small></span>
+        </a>
+      </div>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <a href="#inicio" class="active">Painel</a>
+        <a href="#previsao">Previsão 5 Dias</a>
+        <a href="#comparacao">Comparativo</a>
+        <a href="#arquitetura">Arquitetura</a>
+      </nav>
+      <div class="header-status">
+        <span class="live-pulse"></span> Sistema Ativo
+      </div>
+    </header>
+
+    <main class="main-container">
+      <!-- Seção Principal / Hero -->
+      <section class="hero-section" id="inicio">
+        <div class="hero-text">
+          <div class="badge-pill">
+            <span>⚡ API Gateway & Microsserviços</span>
+          </div>
+          <h1>Monitoramento<br>Meteorológico Global</h1>
+          <p class="hero-description">
+            Plataforma interativa de consulta climática em tempo real. Desenvolvida com foco em resiliência, contratos de API e alta performance visual.
+          </p>
+        </div>
+
+        <div class="search-card">
+          <form id="search-form" novalidate>
+            <label for="city-input">Qual cidade você quer consultar?</label>
+            <div class="search-input-group">
+              <input
+                id="city-input"
+                name="city"
+                type="search"
+                placeholder="Ex: Salvador, Paris, Tóquio..."
+                autocomplete="off"
+                minlength="2"
+                maxlength="100"
+                required
+              >
+              <button class="btn-primary" type="submit">Consultar Clima</button>
+            </div>
+            <p class="field-hint">💡 Dica: Experimente Salvador, Recife ou cidades internacionais.</p>
+            <p class="search-status" id="search-status" role="status" aria-live="polite"></p>
+            
+            <div class="location-picker" id="location-picker" hidden>
+              <label for="location-select">Múltiplos locais encontrados. Selecione o correto:</label>
+              <div class="search-input-group">
+                <select id="location-select" aria-label="Escolha a localidade correta"></select>
+                <button class="btn-secondary" id="weather-submit" type="button">Confirmar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Display de Clima Ativo -->
+      <section class="weather-display-section" aria-label="Resultado meteorológico">
+        <div class="weather-content-card" id="weather-content" aria-live="polite" aria-busy="true">
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Conectando aos microsserviços de dados climáticos…</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grid de Widgets (Histórico e Comparação) -->
+      <div class="dashboard-grid">
+        <!-- Histórico Recente -->
+        <section class="widget-card" aria-labelledby="recent-title">
+          <div class="widget-header">
+            <div>
+              <span class="widget-eyebrow">SESSÃO ATUAL</span>
+              <h2 id="recent-title">Consultas recentes</h2>
+            </div>
+            <div class="widget-icon">↺</div>
+          </div>
+          <p class="widget-desc">As últimas cidades consultadas nesta navegação.</p>
+          <ul class="recent-list" id="recent-list">
+            <li class="empty-message">Nenhuma consulta realizada ainda.</li>
+          </ul>
+        </section>
+
+        <!-- Comparador Lado a Lado -->
+        <section class="widget-card" id="comparacao" aria-labelledby="comparison-title">
+          <div class="widget-header">
+            <div>
+              <span class="widget-eyebrow">ANÁLISE COMPARATIVA</span>
+              <h2 id="comparison-title">Comparar Cidades</h2>
+            </div>
+            <div class="widget-icon">⇄</div>
+          </div>
+          <p class="widget-desc">Selecione duas cidades do histórico para confrontar previsões.</p>
+          
+          <div class="comparison-selectors">
+            <div class="field-group">
+              <label for="compare-first">Cidade A</label>
+              <select id="compare-first" disabled><option value="">Selecione...</option></select>
+            </div>
+            <div class="field-group">
+              <label for="compare-second">Cidade B</label>
+              <select id="compare-second" disabled><option value="">Selecione...</option></select>
+            </div>
+          </div>
+          
+          <div class="comparison-result-box" id="comparison-result" aria-live="polite">
+            <p class="empty-message">Consulte pelo menos duas localidades para ativar o comparativo.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Previsão Extendida e Gráfico -->
+      <section class="widget-card forecast-full-card" id="previsao" aria-labelledby="forecast-title">
+        <div class="widget-header">
+          <div>
+            <span class="widget-eyebrow">TENDÊNCIA CLIMÁTICA</span>
+            <h2 id="forecast-title">Previsão para os Próximos 5 Dias</h2>
+            <p class="widget-desc" id="forecast-caption">Os dados gráficos e diários aparecerão após a consulta de uma cidade.</p>
+          </div>
+          <div class="widget-icon">📊</div>
+        </div>
+        <div class="forecast-chart-container" id="forecast-chart"></div>
+        <div class="forecast-days-grid" id="forecast-days">
+          <p class="empty-message">Aguardando dados de forecast.</p>
+        </div>
+      </section>
+
+      <!-- Bloco de Arquitetura Acadêmica -->
+      <section class="architecture-banner" id="arquitetura">
+        <div class="arch-content">
+          <span class="widget-eyebrow">DOCUMENTAÇÃO TÉCNICA</span>
+          <h2>Arquitetura e Microsserviços na Prática</h2>
+          <p>
+            Este sistema foi desenhado simulando um ecossistema desacoplado: o <strong>Gateway</strong> valida os parâmetros de entrada, o serviço de <strong>Geocoding</strong> resolve as coordenadas geográficas e o serviço de <strong>Forecast</strong> entrega as métricas de tempo real.
+          </p>
+          <div class="arch-steps">
+            <div class="step"><span>01</span><strong>Validação (400/404)</strong></div>
+            <div class="step-arrow">→</div>
+            <div class="step"><span>02</span><strong>Geolocalização</strong></div>
+            <div class="step-arrow">→</div>
+            <div class="step"><span>03</span><strong>Previsão de Tempo</strong></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Rodapé Sofisticado -->
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span>✦ APIMETEO PRO</span>
+          <p>Interface web de alta performance desenvolvida para fins acadêmicos.</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Powered by Open-Meteo API ↗</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
